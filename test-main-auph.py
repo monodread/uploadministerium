@@ -7,10 +7,9 @@ import commands
 
 # here we import the other skripts for subprocessing
 import config
-
 import republica_schedule as schedule
-#import auphonic_upload as uploader
-import youtube_upload as uploader
+import auphonic_upload as uploader
+#import youtube_upload as uploader
 
 dry_run = False
 #debug = False
@@ -22,7 +21,6 @@ h = HTMLParser.HTMLParser()
 files = os.listdir(config.source_dir)
 
 #print files
-
 for index, filename in enumerate(files):
 
     print '\n'
@@ -71,7 +69,7 @@ for index, filename in enumerate(files):
         else:
             print ' generating dependencies... '
             sys.stdout.flush()
-            #
+            # generating the title slides
             title_ts = os.path.join(config.work_dir, "{id}_title.ts".format(id=session_id))
             if not os.path.exists(title_ts):
                 speakers = event['speaker_names']
@@ -85,7 +83,6 @@ for index, filename in enumerate(files):
                 if returncode != 0:
                     print "returncode %d != 0 for %r" % (returncode, command)
                     continue
-
 
     # convert input video to ts
             sys.stdout.write(' converting input video to transport stream... ')
@@ -119,7 +116,7 @@ for index, filename in enumerate(files):
             commands.getstatusoutput("rm " + session_id + "*.ts")
             print 'done'
 
-    print ' upload final file to auphonic'
+    print ' upload final file ...'
     metadata = schedule.get_yt_upload_options(event)
    # options.category = config.tracks_to_category[event.find('track').text]
 
@@ -127,6 +124,6 @@ for index, filename in enumerate(files):
         # upload succuesfl: move file from cut to done
         os.rename(video_path, os.path.join(config.source_files_uploaded_dir, filename))
     else:
-        print "upload failed"
+        print "upload failed. DID NOT MOVE FILE"
 
-    print ' done'
+    print 'TEST done'

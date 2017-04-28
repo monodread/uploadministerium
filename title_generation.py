@@ -42,8 +42,8 @@ output=[]
 
 # line lengths
 line_len_speaker = 25
-line_len_title = 35
-# was 30, but we need to stretch it for longer titles (and we have 3 lines)
+line_len_title = 31
+# was 30, (and we have 3 lines)
 line_len_subtitle = 50
 
 # replace the string in a given svg
@@ -57,6 +57,7 @@ def build_svg():
         print "title not defined"
         sys.exit(1)
     if len(args.title) > (line_len_title*3):
+        # 3 lines are possible
         print "title too long, " + str(len(args.title)) + 'chars'
         sys.exit(1)
     if args.subtitle == None:
@@ -100,7 +101,7 @@ def build_svg():
         title2 = titles[1] or ''
         title3 = titles[2] or ''
         if len(title3) > line_len_title:
-            print "title too long (2nd line) by " +  str(len(title3) - line_len_title) + 'chars'
+            print "title too long (last line) by " +  str(len(title3) - line_len_title) + ' chars'
             sys.exit(1)
     else:
         title1 = ''
@@ -213,11 +214,12 @@ def build_svg():
     outfileName = args.workdir+args.id+".svg"
     outfile = file(outfileName, 'w')
     outfile.writelines(output)
+    print ""
 
 # create a png out of the svg
 def build_png():
     cmd = inkscape+" "+ args.workdir+args.id +".svg -e "+args.workdir+args.id+".png"
-    #print cmd
+    print cmd
     result = commands.getstatusoutput(cmd)
     if result[0] != 0:
         print "png not created"
@@ -270,9 +272,9 @@ def build_video():
 
 sys.stdout.write('   title: SVG \n'); sys.stdout.flush
 build_svg()
-sys.stdout.write('PNG '); sys.stdout.flush
+sys.stdout.write('PNG: '); sys.stdout.flush
 build_png()
-sys.stdout.write('video TS'); sys.stdout.flush
+sys.stdout.write('video TS:'); sys.stdout.flush
 build_video()
 
 print " done."
