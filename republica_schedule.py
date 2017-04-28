@@ -51,9 +51,9 @@ def get_person_data(person_id, event_id=config.event_id):
     data = json.load(p_tmp,'utf-8')
     persondata = data[0]
     p2 = json.dumps(data, ensure_ascii=False ,sort_keys=True, indent=4, separators=(',', ': '))
-#     print "\n\n"
-#     print p2
-#     print "\n\n"
+#   print "\n\n"
+#    print p2
+#   print "\n\n"
     p_tmp.close()
     # add a field for a full name
     persondata['name'] = persondata['gn']+' '+persondata['sn']
@@ -121,15 +121,19 @@ def get_yt_upload_options(event, privacy=config.ytprivacy, playlist=config.ytpla
             continue
         persondata = get_person_data(p, config.event_id)
         personurl = persondata['org_uri']
-        if persondata['links']:
-            for i, a in enumerate(persondata['links']):
-                if 'twitter' in persondata['links'][i]['url']:
-                    persontwiturl = persondata['links'][i]['url']
-                    print persontwiturl
+        #print "adding a social media/twitter url for: " + persondata['name']
+        if len(persondata['links']) > 1 and persondata['links']:
+            urls = []
+            word = 'twitter'
+            for x in persondata['links']:
+                for k,v in x.items():
+                    if k =='url' and word in v:
+                        urls.append(v)
+                        break
         else:
-            persontwiturl = ''
-            print "No Twitter Link found!\n"
-
+            urls = []
+        #print urls
+        twiturls = " | ".join(urls)
         # !! WORKAROUND BY TOM ORR due to UnicodeEncodeError
         s = ""
         for i, l in enumerate(persondata['name']):
@@ -156,12 +160,10 @@ def get_yt_upload_options(event, privacy=config.ytprivacy, playlist=config.ytpla
                 print "SEARCH FOR '~' AND REPLACE MANUALLY AFTER PROCESSING"
         personurl = s
         # !! END WORKAROUND
-        #options["description"] += ('\n\n' + (persondata['name']) + str(personurl and '\n') + str(personurl))
-
-        #options["description"] += ('\n\n'
-        #    + ' | '.join(filter(None, [persondata[a] for a in ['label', 'website_personal', 'twitter', 'facebook']]))
-        #    + str(wo and '\n') + str(wo)
-        options["description"] += ('\n\n' + (persondata['name']) + '\n' + str(personurl) + '\n' + str(persontwiturl))
+        if len(twiturls) > 0:
+            options["description"] += ('\n\n' + (persondata['name']) + '\n' + str(personurl) + '\n' + str(twiturls))
+        else:
+            options["description"] += ('\n\n' + (persondata['name']) + '\n' + str(personurl))
 
     options["description"] += '\n\nCreative Commons Attribution-ShareAlike 3.0 Germany \n(CC BY-SA 3.0 DE)'
 

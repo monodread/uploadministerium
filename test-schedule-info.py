@@ -55,15 +55,26 @@ if test==1:
 ######## TEST 2: Get the speaker info from RP Website!
     person_id = raw_input('Enter Person ID: ')
     if len(person_id) == 0:
-        person_id = str(5750)
-        #person_id = event['speaker_uids'][0]
+        person_id = str(2219)
         print 'None given, using: ' + person_id
 
-        print "fetching speaker data from API:"+person_id
-        person = schedule.get_person_data(person_id)
+    print "fetching speaker data from API:"+person_id
+    person = schedule.get_person_data(person_id)
 
-        print "Speaker Name is: "
-        print person['name']
+    print "Speaker Name is: "
+    print person['name']
+    prettydata = json.dumps(person, ensure_ascii=False ,sort_keys=True, indent=4, separators=(',', ': '))
+    #print prettydata
+    ####
+    for i,x in enumerate(person['links']):
+        print i
+        word = 'twitter'
+        for k,v in x.items():
+            if k == 'url':
+                if word in v:
+                    print "%s=%s" % (k, v)
+
+    #####
 
 if test==2:
     ########## TEST 3: Get complete Json info
@@ -87,12 +98,14 @@ if test==2:
 
 if test==3:
 ####### TEST 3: Get the yt upload options
-    session_id=str(13616) # example ID
+    session_id = raw_input('Enter Session ID: ')
+    if len(session_id) == 0:
+        session_id = str(13616)
+    print 'Using: ' + session_id
+
     event = schedule.get_session_data(session_id)
     print 'format metadata for youtube upload:'
     metadata = schedule.get_yt_upload_options(event)
     # options.category = config.tracks_to_category[event.find('track').text]
-    prettydata = json.dumps(metadata, ensure_ascii=False ,sort_keys=True, indent=4, separators=(',', ': '))
+    prettydata = json.dumps(metadata, ensure_ascii=False ,sort_keys=True, indent=4, separators=(',\n', ': '))
     print prettydata
-    print 'uploading file now'
-    uploader.upload_file(final_file, metadata)
